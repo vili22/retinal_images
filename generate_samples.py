@@ -1,4 +1,5 @@
-from os.path import join
+from os.path import join, isdir
+from os import mkdir
 from utils import image_utils
 import numpy as np
 
@@ -9,6 +10,9 @@ N_samples = 2000
 
 print(training_data.shape)
 print(labels.shape)
+
+if not isdir(join('data', 'training_samples')):
+    mkdir(join('data', 'training_samples'))
 
 np.save(join('data', 'training_samples', 'snapshots_' + str(N_samples) + '.npy'), training_data)
 np.save(join('data', 'training_samples', 'labels_' + str(N_samples) + '.npy'), labels)
