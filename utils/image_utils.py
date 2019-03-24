@@ -1,5 +1,5 @@
-from os import listdir
-from os.path import isfile, join
+from os import listdir, mkdir
+from os.path import isfile, isdir, join
 from scipy import misc
 import numpy as np
 from scipy.misc import imsave
@@ -40,7 +40,7 @@ def get_clipped_area(image_data, indices, dim=None):
         return clips
 
 
-def read_training_data(path, num_training_pixels):
+def read_training_data(path, num_training_pixels, mode='training'):
 
     annotation_path = join(path, '1st_manual')
     mask_path = join(path, 'pure_mask')
@@ -62,7 +62,7 @@ def read_training_data(path, num_training_pixels):
         pixel_indices = np.random.randint(0, high=mask_pixels[0].size, size=num_training_pixels)
         mask_pixels = (mask_pixels[0][pixel_indices], mask_pixels[1][pixel_indices])
 
-        image_file = id + '_training.tif'
+        image_file = id + '_' + mode + '.tif'
         image_data = read_image_file(join(training_image_path, image_file))[:, :, 1]
         clipped_data = get_clipped_area(image_data, vein_pixels, 0)
         training_data = np.concatenate((training_data, clipped_data), axis=0)
@@ -74,11 +74,13 @@ def read_training_data(path, num_training_pixels):
     return [training_data, labels]
 
 
-def generate_pure_mask_images(path):
+def generate_pure_mask_images(path, mode='training'):
 
     annotation_path = join(path, '1st_manual')
     training_mask_path = join(path, 'mask')
     pure_mask_path = join(path, 'pure_mask')
+    if not isdir(pure_mask_path):
+        mkdir(pure_mask_path)
 
     annotations = [f for f in listdir(annotation_path) if isfile(join(annotation_path, f))]
 
@@ -88,7 +90,7 @@ def generate_pure_mask_images(path):
 
         image_id = annotation[0:2]
 
-        mask_file = image_id + '_training_mask.gif'
+        mask_file = image_id + '_' + mode + '_mask.gif'
         mask_data = read_image_file(join(training_mask_path, mask_file))
         mask_pixels = np.where(mask_data > 0)
         mask_pixels = remove_vein_pixels_from_mask(mask_pixels, vein_pixels)
