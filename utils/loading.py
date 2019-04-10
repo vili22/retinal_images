@@ -8,7 +8,7 @@ def load_samples(num_samples):
     mode = 'training'
     snapshots = np.load(join('data', 'training_samples', 'snapshots_' + mode + '_' + str(num_samples) + '.npy'))
     labels = np.load(join('data', 'training_samples', 'labels_' + mode + '_' + str(num_samples) + '.npy'))
-    snapshots = np.reshape(snapshots, (snapshots.shape[0], snapshots.shape[1], snapshots.shape[2], 1))
+    snapshots = np.reshape(snapshots, (snapshots.shape[0], 1, snapshots.shape[1], snapshots.shape[2]))
     snapshots = snapshots.astype(np.float32)
 
     random_indices = random.sample(range(0, labels.size), labels.size)
@@ -20,7 +20,7 @@ def load_samples(num_samples):
     mode = 'validation'
     snapshots = np.load(join('data', 'training_samples', 'snapshots_' + mode + '_' + str(num_samples) + '.npy'))
     labels = np.load(join('data', 'training_samples', 'labels_' + mode + '_' + str(num_samples) + '.npy'))
-    snapshots = np.reshape(snapshots, (snapshots.shape[0], snapshots.shape[1], snapshots.shape[2], 1))
+    snapshots = np.reshape(snapshots, (snapshots.shape[0], 1, snapshots.shape[1], snapshots.shape[2]))
     snapshots = snapshots.astype(np.float32)
 
     random_indices = random.sample(range(0, labels.size), labels.size)
@@ -32,7 +32,7 @@ def load_samples(num_samples):
     mode = 'test'
     snapshots = np.load(join('data', 'training_samples', 'snapshots_' + mode + '_' + str(num_samples) + '.npy'))
     labels = np.load(join('data', 'training_samples', 'labels_' + mode + '_' + str(num_samples) + '.npy'))
-    snapshots = np.reshape(snapshots, (snapshots.shape[0], snapshots.shape[1], snapshots.shape[2], 1))
+    snapshots = np.reshape(snapshots, (snapshots.shape[0], 1, snapshots.shape[1], snapshots.shape[2]))
     snapshots = snapshots.astype(np.float32)
 
     random_indices = random.sample(range(0, labels.size), labels.size)
