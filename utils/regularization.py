@@ -1,19 +1,3 @@
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import numpy as np
-
-
-def compute_loss(mlp, device, x, y):
-    mlp.eval()
-    with torch.no_grad():
-        x = torch.tensor(x, device=device, dtype=torch.float)
-        y = torch.tensor(y, device=device, dtype=torch.float)
-        outputs = mlp.forward(x)
-        loss = F.mse_loss(outputs, y)
-        return np.asscalar(loss.cpu().data.numpy())
-
-
 class EarlyStopping:
     def __init__(self, tolerance, patience):
         """
