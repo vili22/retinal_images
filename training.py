@@ -28,7 +28,7 @@ def train(num_epochs, learning_rate, model_params, batch_size, x_train, y_train,
     val_errors = []
     val_losses = []
 
-    early_stop = EarlyStopping(tolerance=0.03, patience=4)
+    early_stop = EarlyStopping(tolerance=0.01, patience=2)
 
     for epoch in range(num_epochs):
         start_time = time.time()
@@ -87,7 +87,7 @@ def optimize_hyper_parameters(num_epochs, learning_rate, num_combinations, batch
 
     hyper_parameters = np.array(hyper_parameters)
     accuracies = np.array(accuracies)
-    np.savez(join('saved_models', 'hyperparameters1.npz'),
+    np.savez(join('saved_models', 'hyperparameters3.npz'),
              hyperparameters=hyper_parameters,
              accuracies=accuracies)
 

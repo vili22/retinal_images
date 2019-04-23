@@ -30,8 +30,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 
-\title{Logistic regression and Bayes-classifier study of classification of
-  songs to genres based on timbre, pitch and rhythm of the music signal }
+\title{Automatic Detection of Blood Vessels From Retinal Images Using Convolutional Neural Network }
 \date{\today}
 \author{Ville Virkkala, Jarno Leppänen}
 \affiliation{Ekahau Research}
@@ -50,43 +49,11 @@
 \maketitle
 
 \section{Introduction}
-An automatic music transcription, \textit{i.e.}, notating a piece of music to
-a speficic genre, \textit{e.g.}, Blues, dates back to 1970s when first attempts
-towards automatic music transcription were made\cite{musictranscription}. Since
-then interest in
-automatic transcription of music has grown rapidly and various approaches,
-statistical methods, modelling human auditory system, have been applied to
-music transcription problem. However even today an expert human musician often
-beats a state-of-the-art automatic transcription system in accuracy.
 
-Characteristics of music signal that are useful in classification of a song
-are \textit{timbre}, \textit{rhythm}, \textit{pitch}, \textit{loudness} and
-\textit{duration}\cite{musictranscription} from which the three first one,
-described below are used in this work.
-\begin{itemize}  
-\item The timbre of the music can be most easily described as the factor
-  which separates two sources of music from each other. For example if the same
-  song is played by violin or a guitar the timbre is called the character which
-  separates the violin from the guitar.
-\item The pitch is related to frequency scale of a song a can be defined as the
-  frequency of the sine-wave fitted to target sound by human listener.
-\item The rhythm of the music can be described as arrangement of sounds as time
-  flows.
-\end{itemize}
+Several studies have used neural networks in automatic blood vessel detection from retinal images. These methods can be roughly divided into two groups: patch based segmentation of blood vessels and methods based on fully convolutional neural networks. In patch based image segmentation the image is traversed through pixel by pixel. For each pixel a patch of fixed size, centered at the pixel, is taken from the image and fed to neural network that classifies the pixel into certain class.
+The advantages of patch based method are their simplicity and ease of training. However, their main disadvantage is the high computational load when doing inference, because for each pixel separate patch is taken that is fed to neural network. Fully convolutional neural network are the current state of the art method in image segmentation. The huge advantage of fully convolutional neural network is the huge speed up compared to patch based methods, because the whole image is fed only once as whole to the neural network. In addition there is more contextual information available in fully convolutional neural networks because the whole image is processed at once instead of using smaller patches. 
 
-In classification problem the object is classified into a certain class based
-on it's characteristics called features. A linear classifier does the
-classification by making a linear combination of the features and converting
-the resulting value into a class or a probability that the object belongs to
-given class. In logistic regression the feature vector of the object is
-transformed into a probality by taking a linear combination of features and
-mapping the result into interval $\lbrack 0, 1\rbrack$ using a sigmoid function.
-The Bayes-classifier in contrast assumes that the feature vector is drawn from a
-multidimensional-Gaussian distribution. The posterior probability of the object
-belonging to a certain class is then obtained as a product of the prior of the
-class and the probability to sample the given feature vector from the
-multidimensional Gaussian distribution.
-
+In this work patch based semantic segmentation method using convolutional neural network is developed to detect blood vessels from retinal images. The performance of the developed method is validated against several test images.
 The paper is organized as follows. The used data-set and the computational
 methods are described in detail in Sec. \ref{sec:methods}. In Sec.
 \ref{sec:results} the results for the both logistic regression- and
