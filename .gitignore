@@ -3,6 +3,7 @@ data/training_samples
 venv
 *__pycache__*
 report/report.aux
+report/report.blg
 report/report.bbl
 report/report.log
 report/report.synctex.gz

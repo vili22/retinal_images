@@ -36,14 +36,7 @@
 \affiliation{Ekahau Research}
 
 \begin{abstract}
-  A genre of a song can be estimated based on its music signal's
-  characteristics . In this work we use two classifiers, Bayes Classifier
-  and Logistic classifier, to classify songs into one of ten possible genres. The
-  two classifiers are trained against the training data and their performance is
-  compared against each other. In this work we show that both classifiers
-  perform much better compared to random guess. However their capability to
-  classify all songs is clearly limited the accuracy for both classifiers being
-  around 60\%.
+  
 \end{abstract}
 
 \maketitle
@@ -53,29 +46,79 @@
 Several studies have used neural networks in automatic blood vessel detection from retinal images. These methods can be roughly divided into two groups: patch based segmentation of blood vessels and methods based on fully convolutional neural networks. In patch based image segmentation the image is traversed through pixel by pixel. For each pixel a patch of fixed size, centered at the pixel, is taken from the image and fed to neural network that classifies the pixel into certain class.
 The advantages of patch based method are their simplicity and ease of training. However, their main disadvantage is the high computational load when doing inference, because for each pixel separate patch is taken that is fed to neural network. Fully convolutional neural network are the current state of the art method in image segmentation. The huge advantage of fully convolutional neural network is the huge speed up compared to patch based methods, because the whole image is fed only once as whole to the neural network. In addition there is more contextual information available in fully convolutional neural networks because the whole image is processed at once instead of using smaller patches. 
 
-In this work patch based semantic segmentation method using convolutional neural network is developed to detect blood vessels from retinal images. The performance of the developed method is validated against several test images.
+In this work patch based semantic segmentation method using convolutional neural network is developed to detect blood vessels from retinal images. The performance of the developed method is validated against several test images. In addition performance of the developed method is compared to random forest classifier implemented in scikit-learn python library.
 The paper is organized as follows. The used data-set and the computational
-methods are described in detail in Sec. \ref{sec:methods}. In Sec.
-\ref{sec:results} the results for the both logistic regression- and
-Bayes-classifier are given. Sec. \ref{sec:conclusions} is a
-summary of the results and the differences between the two classifiers are
-discussed.
+methods are described in detail in sections \ref{sec:used_data_set} and \ref{sec:methods}. In Sec. \ref{sec:results} training metrics and performance of the developed method in inference when applied on test images are given.
+Sec. \ref{sec:conclusions} is a summary of the results and the differences between the two classifiers are discussed.
 
-\section{Used data-set and computational methods}
-\label{sec:methods}
-\subsection{Used data-set}
+\section{Used data-set}
 \label{sec:used_data_set}
-The data-set consisted of 4363 songs and was divided into training and test data
-sets including every third song to test set and rest of the songs to training
-set. Each song contained 264 features and the songs were labeled to 10
-different categories. The gatecories were: 1 Pop Rock, 2 Electronic, 3 Rap,
-4 jazz, 5 Latin, 6 RnB, 7 International, 8 Country, 9 Reggae and 10 Blues.
-The musical characteristics of the songs were packed to a feature
-vector of length 256. The first 48 elements in the feature vector can be
-associated to timbre, the next 48 elements to pitch and the final 168 features
-to rhythm. The distribution of the features resembled in most cases a Gaussian
-distribution or a skew symmetric distribution. This is illustrated figures
-\ref{fig:feature_distribution}a and \ref{fig:feature_distribution}b.
+The used data set in this work is the publicly available DRIVE data set \cite{drive} available in \cite{drive_url}. The data set consist of 40 images of size 565x584 and the corresponding ground truth annotations of blood vessels. The images were obtained from diabetic subjects as a part of diabetic retinopathy screening program in The Netherlands.
+
+The data set was divided into training, validation and test sets containing 28, 6 and 6 images respectively. The images are three channel RGB images, but only the green channel was used in classification, because typically the blood vessels are best visible at the green channel. In classification of pixels patches of size 33x33 centered at the pixel were used. Examples of retinal image that is classified and the corresponding ground truth image are shown in figures \ref{fig:example_images}a and \ref{fig:example_images}b respectively. Examples of patches that corresponds to pixels that are labeled as blood vessels and background are shown in figures \ref{fig:example_patches}a-\ref{fig:example_patches}c and \ref{fig:example_patches}d-\ref{fig:example_patches}f respectively.
+\begin{figure*}[!t]
+	\centering
+	\begin{subfigure}[]{0.45\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/02_training.eps}
+		\caption{}
+	\end{subfigure}
+	\hspace{1cm}
+	\centering
+	\begin{subfigure}[]{0.45\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/02_manual1.eps}
+		\caption{}
+	\end{subfigure}\\
+	\caption{Example of retinal image used in training (a) and the corresponding ground truth annotation of blood vessels (b).}
+	\label{fig:example_images}
+\end{figure*}
+
+\begin{figure*}[!t]
+	\centering
+	\begin{subfigure}[]{0.28\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/positive1.eps}
+		\caption{}
+	\end{subfigure}
+	\hspace{0.5cm}
+	\centering
+	\begin{subfigure}[]{0.3\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/positive2.eps}
+		\caption{}
+	\end{subfigure}
+	\hspace{0.5cm}
+	\centering
+	\begin{subfigure}[]{0.3\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/positive3.eps}
+		\caption{}
+	\end{subfigure}\\
+	\vspace{0.5cm}
+	\centering
+	\begin{subfigure}[]{0.3\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/negative1.eps}
+		\caption{}
+	\end{subfigure}
+	\hspace{0.5cm}
+	\centering
+    \begin{subfigure}[]{0.3\textwidth}
+    	\centering
+    	\includegraphics[width=\textwidth]{images/negative2.eps}
+    	\caption{}
+    \end{subfigure}
+    \hspace{0.5cm}
+    \centering
+    \begin{subfigure}[]{0.3\textwidth}
+    	\centering
+    	\includegraphics[width=\textwidth]{images/negative3.eps}
+    	\caption{}
+    \end{subfigure}\\
+	\caption{Examples of patches corresponding to pixels that are labeled as blood vessels (a)-(c) and patches corresponding to pixels that are labeled as background (d)-(f). The pixel that the label is related to is located at the center of patch.}
+	\label{fig:example_patches}
+\end{figure*}
 
 
 \subsection{Computational methods}

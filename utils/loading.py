@@ -42,3 +42,15 @@ def load_samples(num_samples):
     y_test = np.reshape(y_test, (y_test.size, 1))
 
     return (x_train, y_train), (x_valid, y_valid), (x_test, y_test)
+
+
+def load_visualization_samples(num_samples):
+
+    mode = 'training'
+    snapshots = np.load(join('..', 'data', 'training_samples', 'snapshots_' + mode + '_' + str(num_samples) + '.npy'))
+    labels = np.load(join('..', 'data', 'training_samples', 'labels_' + mode + '_' + str(num_samples) + '.npy'))
+    snapshots = np.reshape(snapshots, (snapshots.shape[0], 1, snapshots.shape[1], snapshots.shape[2]))
+    snapshots = snapshots.astype(np.float32)
+
+
+    return (snapshots, labels)

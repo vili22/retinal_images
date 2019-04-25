@@ -1,12 +1,8 @@
 This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
 Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: report.aux
-I couldn't open database file references.bib
----line 14 of file report.aux
- : \bibdata{reportNotes,references
- :                                }
-I'm skipping whatever remains of this command
 The style file: apsrev4-1.bst
+I found no \citation commands---while reading file report.aux
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
@@ -15,7 +11,7 @@ Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Database file #1: reportNotes.bib
-Warning--I didn't find a database entry for "musictranscription"
+Database file #2: references.bib
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 merlin.mbs apsrev4-1.bst 2010-07-25 4.21a (PWD, AO, DPC) hacked
 Control: key (0) 
@@ -27,7 +23,7 @@ Control: year (1) truncated
 Control: production of eprint (0) enabled
 You've used 0 entries,
             5847 wiz_defined-function locations,
-            1598 strings with 14620 characters,
+            1597 strings with 14602 characters,
 and the built_in function-call counts, 313 in all, are:
 = -- 0
 > -- 3
