@@ -25,5 +25,35 @@ def visualize_samples():
     plt.show()
 
 
+def visualize_pseudoparameter_accuracies():
+
+    hyperparameters = np.zeros((0, 3), dtype=int)
+    accuracies = np.zeros((0, ), dtype=float)
+
+    stored = np.load('../saved_models/hyperparameters1.npz')
+    hyperparameters = np.row_stack((hyperparameters, stored['hyperparameters']))
+    accuracies = np.append(accuracies, stored['accuracies'])
+
+    stored = np.load('../saved_models/hyperparameters2.npz')
+    hyperparameters = np.row_stack((hyperparameters, stored['hyperparameters']))
+    accuracies = np.append(accuracies, stored['accuracies'])
+
+    stored = np.load('../saved_models/hyperparameters3.npz')
+    hyperparameters = np.row_stack((hyperparameters, stored['hyperparameters']))
+    accuracies = np.append(accuracies, stored['accuracies'])
+
+    stored = np.load('../saved_models/hyperparameters4.npz')
+    hyperparameters = np.row_stack((hyperparameters, stored['hyperparameters']))
+    accuracies = np.append(accuracies, stored['accuracies'])
+
+    ix = accuracies.argsort()[-1::-1]
+
+    print(accuracies[ix])
+    print(hyperparameters[ix, :])
+
+
+
+
 if __name__ == '__main__':
-    visualize_samples()
+    #visualize_samples()
+    visualize_pseudoparameter_accuracies()

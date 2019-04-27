@@ -87,7 +87,7 @@ def optimize_hyper_parameters(num_epochs, learning_rate, num_combinations, batch
 
     hyper_parameters = np.array(hyper_parameters)
     accuracies = np.array(accuracies)
-    np.savez(join('saved_models', 'hyperparameters3.npz'),
+    np.savez(join('saved_models', 'hyperparameters4.npz'),
              hyperparameters=hyper_parameters,
              accuracies=accuracies)
 
