@@ -59,8 +59,9 @@ def visualize_training_losses():
     val_losses = losses['val_losses']
     final_accuracy = losses['final_accuracy']
 
-    plt.plot(train_losses, '-b')
     plt.plot(val_losses, '-r')
+    plt.xlabel('epoch number')
+    plt.ylabel('binary-cross-entropy loss')
     print(final_accuracy)
     plt.show()
 
