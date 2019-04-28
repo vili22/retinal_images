@@ -52,8 +52,21 @@ def visualize_pseudoparameter_accuracies():
     print(hyperparameters[ix, :])
 
 
+def visualize_training_losses():
+
+    losses = np.load('../saved_models/training_losses.npz')
+    train_losses = losses['train_losses']
+    val_losses = losses['val_losses']
+    final_accuracy = losses['final_accuracy']
+
+    plt.plot(train_losses, '-b')
+    plt.plot(val_losses, '-r')
+    print(final_accuracy)
+    plt.show()
+
 
 
 if __name__ == '__main__':
     #visualize_samples()
-    visualize_pseudoparameter_accuracies()
+    #visualize_pseudoparameter_accuracies()
+    visualize_training_losses()

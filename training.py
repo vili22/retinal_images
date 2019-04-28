@@ -25,6 +25,7 @@ def train(num_epochs, learning_rate, model_params, batch_size, x_train, y_train,
     criterion = nn.BCELoss()
 
     optimizer = optim.Adam(net.parameters(), lr=learning_rate)
+    train_losses = []
     val_errors = []
     val_losses = []
 
@@ -32,6 +33,7 @@ def train(num_epochs, learning_rate, model_params, batch_size, x_train, y_train,
 
     for epoch in range(num_epochs):
         start_time = time.time()
+        epoch_loss = 0
         for k in range(int(y_train.size / batch_size) - 1):
             start_ind = k * batch_size
             end_ind = (k + 1) * batch_size if (k + 1) * batch_size < y_train.size else y_train.size
@@ -44,27 +46,34 @@ def train(num_epochs, learning_rate, model_params, batch_size, x_train, y_train,
             # forward + backward + optimize
             outputs = net(x)
             loss = criterion(outputs, y)
+            epoch_loss += np.asscalar(loss.cpu().data.numpy())
+
             loss.backward()
             optimizer.step()
 
         # Print accuracy after every epoch
+        train_losses.append(epoch_loss)
         validation_accuracy = compute_accuracy(net, x_valid, y_valid)
         val_errors.append(validation_accuracy)
         validation_loss = compute_loss(net, x_valid, y_valid)
         val_losses.append(validation_loss)
         time_taken = (time.time() - start_time)
         print('Accuracy of the network on epoch %d %%' % epoch + ': %f %%' % (100 * validation_accuracy) +
-              ' loss: %f ' % validation_loss + ' took %f' %time_taken + 'seconds')
+              'validation loss: %f ' % validation_loss + 'train loss: %f ' % epoch_loss + ' took %f' %time_taken + 'seconds')
         if early_stop.stop_criterion(val_losses):
             print('Stop after %d epochs' % epoch)
             break
 
+    test_accuracy = compute_accuracy(net, x_test, y_test)
     if save_model:
         save_filename = join('saved_models',
-                             'convnet_' + model_params[0] + 'x' + model_params[1] + 'x' + model_params[2] + '.pth')
+                             'convnet_' + str(model_params[0]) + 'x' + str(model_params[1]) + 'x' + str(model_params[2]) + '.pth')
         torch.save(net.state_dict(), save_filename)
+        np.savez(join('saved_models', 'training_losses.npz'),
+                 train_losses=train_losses,
+                 val_losses=val_losses,
+                 final_accuracy=test_accuracy)
 
-    test_accuracy = compute_accuracy(net, x_test, y_test)
     print('Final test accuracy: %f %%' % (100 * test_accuracy))
     return test_accuracy
 
@@ -111,7 +120,7 @@ def main(args):
     num_epochs = args.num_epochs
     batch_size = args.batch_size
     learning_rate = args.learning_rate
-    hyper_parameter_optimization = args.optimize_hyperparameters
+    hyper_parameter_optimization = False#args.optimize_hyperparameters
     num_combinations = args.num_combinations
     save_model = args.save_model
 
@@ -121,7 +130,7 @@ def main(args):
         optimize_hyper_parameters(num_epochs, learning_rate, num_combinations, batch_size,
                                   x_train, y_train, x_valid, y_valid, x_test, y_test)
     else:
-        train(num_epochs, learning_rate, [32, 64, 1024], batch_size, x_train, y_train, x_valid,
+        train(num_epochs, learning_rate, [33, 67, 355], batch_size, x_train, y_train, x_valid,
               y_valid, x_test, y_test, device='cpu', save_model=save_model)
 
 
