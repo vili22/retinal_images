@@ -74,7 +74,7 @@ The data set was divided into training, validation and test sets containing 28, 
 	\label{fig:example_images}
 \end{figure*}
 
-\begin{figure*}[!b]
+\begin{figure*}[t]
 	\centering
 	\begin{subfigure}[]{0.25\textwidth}
 		\centering
@@ -133,6 +133,13 @@ the effect of feature extraction and for that purpose we used principal
 component analysis method to exclude features with little impact. 
 \subsection{Developed Convolutional Neural Network}
 \label{sec:computational_methods_developed_network}
+ The input of size 33x33 pixels is fed to two convolutional layers with kernels of sizes 5x5. Each convolutional layer is followed by max-pool layer of stride 2. The output of second max-pool layer is flattened and fed to fully connected layer followed by linear-rectifying unit. Finally the RELU is followed by last fully connected layer with single output. The output of the network is converted to probability using sigmoid function and the final class label is obtained using round operator.
+\begin{figure*}[!t]
+	\centering
+	\includegraphics[width=0.9\textwidth]{images/net_cropped.eps}
+	\caption{Architecture of the developed convolutional neural network.}
+	\label{fig:net}
+\end{figure*}
 
 \subsection{Training}
 \label{sec:computational_methods_training}
