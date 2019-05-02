@@ -116,7 +116,7 @@ def train_random_forets_classifier(x_train, y_train, x_test, y_test, save_model=
     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[2] * x_test.shape[3]))
     y_train = np.reshape(y_train, (y_train.size, ))
     y_test = np.reshape(y_test, (y_test.size, ))
-    classifier = RandomForestClassifier(n_estimators=100, verbose=1, n_jobs=-1)
+    classifier = RandomForestClassifier(n_estimators=200, verbose=1, n_jobs=-1)
     classifier.fit(x_train, y_train)
     pred_test = classifier.predict(x_test)  # Predict labels of test data using the trained classifier
     rf_accuracy = accuracy_score(y_test, pred_test)
