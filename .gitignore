@@ -8,3 +8,4 @@ report/report.bbl
 report/report.log
 report/report.synctex.gz
 *.pdf
+saved_models/*.p

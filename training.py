@@ -106,6 +106,31 @@ def optimize_hyper_parameters(num_epochs, learning_rate, num_combinations, batch
     print(hyper_parameters[ix, :])
 
 
+def train_random_forets_classifier(x_train, y_train, x_test, y_test, save_model=False):
+
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.metrics import accuracy_score
+    import pickle
+
+    x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[2] * x_train.shape[3]))
+    x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[2] * x_test.shape[3]))
+    y_train = np.reshape(y_train, (y_train.size, ))
+    y_test = np.reshape(y_test, (y_test.size, ))
+    classifier = RandomForestClassifier(n_estimators=100, verbose=1, n_jobs=-1)
+    classifier.fit(x_train, y_train)
+    pred_test = classifier.predict(x_test)  # Predict labels of test data using the trained classifier
+    rf_accuracy = accuracy_score(y_test, pred_test)
+    print("Accuracy of random forest: {:.2f}".format(rf_accuracy))
+
+    if save_model:
+        pickle.dump(classifier, open('saved_models/random_forest.p', 'wb'))
+
+    classifier = pickle.load(open('saved_models/random_forest.p', 'rb'))
+    pred_test = classifier.predict(x_test)  # Predict labels of test data using the trained classifier
+    rf_accuracy = accuracy_score(y_test, pred_test)
+    print("Accuracy of random forest: {:.2f}".format(rf_accuracy))
+
+
 def main(args):
 
     parser = argparse.ArgumentParser()
@@ -115,8 +140,10 @@ def main(args):
     parser.add_argument('--optimize_hyperparameters', default=False, type=bool)
     parser.add_argument('--save_model', default=False, type=bool)
     parser.add_argument('--num_combinations', default=10, type=int)
+    parser.add_argument('--use_random_forest', default=False, type=bool)
     args = parser.parse_args(args)
 
+    use_random_forest = args.use_random_forest
     num_epochs = args.num_epochs
     batch_size = args.batch_size
     learning_rate = args.learning_rate
@@ -126,7 +153,9 @@ def main(args):
 
     (x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_samples(2000)
 
-    if hyper_parameter_optimization:
+    if use_random_forest:
+        train_random_forets_classifier(x_train, y_train, x_test, y_test, save_model)
+    elif hyper_parameter_optimization:
         optimize_hyper_parameters(num_epochs, learning_rate, num_combinations, batch_size,
                                   x_train, y_train, x_valid, y_valid, x_test, y_test)
     else:
