@@ -47,7 +47,7 @@ optometric studies. In this work a convolutional neural network is developed to 
 Several studies have used neural networks in automatic blood vessel detection from retinal images. These methods can be roughly divided into two groups: patch based segmentation of blood vessels\cite{tan} and methods based on fully convolutional neural networks\cite{long,hu}. In patch based image segmentation the image is traversed through pixel by pixel. For each pixel a patch of fixed size, centered at the pixel, is taken from the image and fed to neural network that classifies the pixel into certain class. In Ref. \cite{tan}, for each pixel three patches of different sizes from the green channel of image were taken and scaled into same size and used as a three channel input to convolutional neural network. In Ref. \cite{tan} the reported accuracy was in most cases clearly better than 90\%. 
 The advantages of patch based method are their simplicity and ease of training. However, their main disadvantage is the high computational load when doing inference, because for each pixel separate patch is taken that is fed to neural network. Fully convolutional neural networks\cite{long} are the current state of the art method in image segmentation. The huge advantage of fully convolutional neural network is the huge speed up compared to patch based methods, because the whole image is fed only once as whole to the neural network. In addition there is more contextual information available in fully convolutional neural networks because the whole image is processed at once instead of using smaller patches. In Ref. \cite{hu} a modified version of the fully convolutional network in Ref. \cite{long} was used. In Ref. \cite{hu} the downsampling of the image was done using the same VGG-16 network as in \cite{long} however the output of each convolution stage was directly upsampled into original size and a binary cross entropy loss was then connected into each upsampled image. The final loss that was optimized is then the sum of the losses connected to each upsampled image. In Ref. \cite{hu} the reported accuracy was in all cases better than 95\% while the method was much faster, single image segmentation time around 11seconds, than the method of Ref. \cite{tan}, single image segmentation time around 2000 seconds.  
 
-In this work a patch based semantic segmentation method based on convolutional neural networks, resembling that of Ref. \cite{tan},  is developed to detect blood vessels from retinal images. The performance of the developed method is validated against several test images. In addition performance of the developed method is compared to random forest classifier implemented in scikit-learn python library.
+In this work a patch based semantic segmentation method based on convolutional neural networks, resembling that of Ref. \cite{tan},  is developed to detect blood vessels from retinal images. The performance of the developed method is validated against several test images. In addition performance of the developed method is compared to random forest classifier implemented in scikit-learn python library \cite{scikit-learn}.
 The paper is organized as follows. The used data-set and the computational
 methods are described in detail in sections \ref{sec:used_data_set} and \ref{sec:computational_methods}. In Sec. \ref{sec:results} training metrics and performance of the developed method in inference when applied on test images are given.
 Sec. \ref{sec:conclusions} is a summary of the results and the differences between the two classifiers are discussed.
@@ -56,7 +56,7 @@ Sec. \ref{sec:conclusions} is a summary of the results and the differences betwe
 \label{sec:used_data_set}
 The used data set in this work is the publicly available DRIVE data set \cite{staal} available in \cite{driveurl}. The data set consist of 40 images of size 565x584 and the corresponding ground truth annotations of blood vessels. The images were obtained from diabetic subjects as a part of diabetic retinopathy screening program in The Netherlands.
 
-The data set was divided into training, validation and test sets containing 28, 6 and 6 images respectively. The images are three channel RGB images, but only the green channel was used in classification, because typically the blood vessels are best visible at the green channel. In classification of pixels patches of size 33x33 centered at the pixel were used. From each image 2000 patches for both pixels corresponding to blood vessels and background pixels were randomly sampled resulting in total 112000 samples for training set, 24000 samples for validation set and 24000 samples for test set respectively. Examples of retinal image that is classified and the corresponding ground truth image are shown in figures \ref{fig:example_images}a and \ref{fig:example_images}b respectively. Examples of patches that corresponds to pixels that are labeled as blood vessels and background are shown in figures \ref{fig:example_patches}a-\ref{fig:example_patches}c and \ref{fig:example_patches}d-\ref{fig:example_patches}f respectively.
+The data set was divided into training, validation and test sets containing 28, 6 and 6 images respectively. The images are three channel RGB images, but only the green channel is used in classification, because of the high contrast between blood vessels and background in green channel\cite{green_contrast}. In classification of pixels patches of size 33x33 centered at the pixel were used. From each image 2000 patches for both pixels corresponding to blood vessels and background pixels were randomly sampled resulting in total of 112000 samples for training set, 24000 samples for validation set and 24000 samples for test set respectively. Examples of retinal image that is classified and the corresponding ground truth image are shown in figures \ref{fig:example_images}a and \ref{fig:example_images}b respectively. Examples of patches that corresponds to pixels that are labeled as blood vessels and background are shown in figures \ref{fig:example_patches}a-\ref{fig:example_patches}c and \ref{fig:example_patches}d-\ref{fig:example_patches}f respectively.
 \begin{figure*}[!t]
 	\centering
 	\begin{subfigure}[]{0.4\textwidth}
@@ -75,6 +75,9 @@ The data set was divided into training, validation and test sets containing 28, 
 	\label{fig:example_images}
 \end{figure*}
 
+\section{Computational methods}
+\label{sec:computational_methods}
+The developed neural network in this work is implemented using the Python programming language and the PyTorch\cite{pytorch} open-source machine learning library for Python. The reference, random-forest classifier, method is implemented using the Scikit-learn machine learning library\cite{scikit-learn}. The source code for most relevant parts of the algorithm are given in Appendix \ref{appendix:a}
 \begin{figure*}[!t]
 	\centering
 	\begin{subfigure}[]{0.22\textwidth}
@@ -105,33 +108,29 @@ The data set was divided into training, validation and test sets containing 28, 
 	\end{subfigure}
 	\hspace{1.55cm}
 	\centering
-    \begin{subfigure}[]{0.22\textwidth}
-    	\centering
-    	\includegraphics[width=\textwidth]{images/negative2.eps}
-    	\caption{}
-    \end{subfigure}
-    \hspace{1.55cm}
-    \centering
-    \begin{subfigure}[]{0.22\textwidth}
-    	\centering
-    	\includegraphics[width=\textwidth]{images/negative3.eps}
-    	\caption{}
-    \end{subfigure}\\
+	\begin{subfigure}[]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/negative2.eps}
+		\caption{}
+	\end{subfigure}
+	\hspace{1.55cm}
+	\centering
+	\begin{subfigure}[]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/negative3.eps}
+		\caption{}
+	\end{subfigure}\\
 	\caption{Examples of patches corresponding to pixels that are labeled as blood vessels (a)-(c) and patches corresponding to pixels that are labeled as background (d)-(f). The pixel that the label is related to is located at the center of patch.}
 	\label{fig:example_patches}
 \end{figure*}
-
-
-\section{Computational methods}
-\label{sec:computational_methods}
-The developed neural network in this work is implemented using the Python programming language and the PyTorch open-source machine learning library for Python. The reference, random-forest classifier, method is implemented using the Scikit-learn machine learning library. The source code for most relevant parts of the algorithm are given in Appendix \ref{appendix:a}
 \subsection{Developed Convolutional Neural Network}
 \label{sec:computational_methods_developed_network}
-The developed convolutional neural network resembles that of Ref. \cite{tan}. However, instead of using three different patch resolutions in classification for a given pixel, only one resolution corresponding to 33x33 pixels is used in this work. The architecture of the developed neural network is shown in figure \ref{fig:net}. 
-The input of size 33x33 pixels is fed to two convolutional layers with kernels of sizes 5x5. Each convolutional layer is followed by linear rectifying unit (RELU), a patch normalization layer and a max-pool layer with stride 2. The output of second max-pool layer is flattened and fed to fully connected layer followed by linear-rectifying unit. The RELU is followed by dropout layer with dropout probability of 0.5. Finally the output of the dropout layer is forwarded to last fully connected layer with single output. The output of the network is converted to probability using sigmoid function and the final class label is obtained using round operator.
-\begin{figure*}[!t]
+The image is processed pixel by by and for each pixel a patch of size 33x33, cenetered at the pixel, is taken from the image and used in classification.
+The developed convolutional neural network resembles that of Ref. \cite{tan}. However, instead of using three different patch resolutions in classification for a given pixel, only one resolution corresponding to 33x33 pixels from green channel is used in this work. The architecture of the developed neural network is shown in figure \ref{fig:net}. 
+The input of size 33x33 pixels is fed to two convolutional layers with kernels of sizes 5x5. Each convolutional layer is followed by linear rectifying unit (RELU), a patch normalization layer and a max-pool layer with stride 2. The output of second max-pool layer is flattened and fed to fully connected layer followed by RELU. The RELU is followed by dropout layer with dropout probability of 0.5. Finally the output of the dropout layer is forwarded to last fully connected layer with single output. The output of the network is converted to probability using sigmoid function and the final class label is obtained using round operator.
+\begin{figure*}[]
 	\centering
-	\includegraphics[width=0.9\textwidth]{images/net_cropped.eps}
+	\includegraphics[width=0.7\textwidth]{images/net_cropped.eps}
 	\caption{Architecture of the developed convolutional neural network.}
 	\label{fig:net}
 \end{figure*}
@@ -179,18 +178,8 @@ The obtained accuracy for the test data set using the trained random-forest clas
 
 \section{Conclusions}
 \label{sec:conclusions}
-In this work we used logistic-regression and Bayes-classifier to classify songs
-to different genres based on the music signal's characteristics. For logistic
-regression the obtained accuracy for test set was 0.67 and logistic-loss 0.27.
-For the external data set used the obtained accuracy and logistic-loss were 0.65
-and 0.178 respectively in the case of logistic-regression. For the
-Bayes-classifier the obtained accuracy and logistic-loss were 0.53 and 0.33 for
-the test-data and for external data set 0.32 and 1.17 respectively. According to
-obtained results both classifiers performed clearly better than random guess,
-but remained far from perfect classification. From the two classifiers used
-the logistic-regression classifier performed clearly better. The logistic
-classifier also generalized much better to completely new data giving nearly
-equal performance for test data set and external data set.
+
+
 \bibliography{references}
 
 \appendix
@@ -251,68 +240,80 @@ from utils.loss_utils import compute_loss, compute_accuracy
 from utils.parameter_search import random_search
 
 
-def train(num_epochs, learning_rate, model_params, batch_size, x_train, y_train, x_valid, y_valid, x_test, y_test, device='cpu', save_model=False):
+def train(num_epochs, learning_rate, model_params, batch_size, x_train,
+          y_train, x_valid, y_valid, x_test, y_test,
+          device='cpu', save_model=False):
 
-net = ConvNet(1, model_params[0], model_params[1], model_params[2])
-net.to(device)
+	net = ConvNet(1, model_params[0], model_params[1], model_params[2])
+	net.to(device)
 
-criterion = nn.BCELoss()
+	criterion = nn.BCELoss()
 
-optimizer = optim.Adam(net.parameters(), lr=learning_rate)
-train_losses = []
-val_errors = []
-val_losses = []
+	optimizer = optim.Adam(net.parameters(), lr=learning_rate)
+	train_losses = []
+	val_errors = []
+	val_losses = []
 
-early_stop = EarlyStopping(tolerance=0.01, patience=2)
+	early_stop = EarlyStopping(tolerance=0.01, patience=2)
 
-for epoch in range(num_epochs):
-start_time = time.time()
-epoch_loss = 0
-for k in range(int(y_train.size / batch_size) - 1):
-start_ind = k * batch_size
-end_ind = (k + 1) * batch_size if (k + 1) * batch_size < y_train.size else y_train.size
-x = torch.tensor(x_train[start_ind:end_ind, :], device=device, dtype=torch.float)
-y = torch.tensor(y_train[start_ind:end_ind, :], device=device, dtype=torch.float)
+	for epoch in range(num_epochs):
+		start_time = time.time()
+		epoch_loss = 0
+		for k in range(int(y_train.size / batch_size) - 1):
+			start_ind = k * batch_size
+			end_ind = (k + 1) * batch_size if (k + 1) * batch_size <
+					   y_train.size else y_train.size
+			x = torch.tensor(x_train[start_ind:end_ind, :], device=device,
+				             dtype=torch.float)
+			y = torch.tensor(y_train[start_ind:end_ind, :], device=device,
+						     dtype=torch.float)
 
-# zero the parameter gradients
-optimizer.zero_grad()
+			# zero the parameter gradients
+			optimizer.zero_grad()
 
-# forward + backward + optimize
-outputs = net(x)
-loss = criterion(outputs, y)
-epoch_loss += np.asscalar(loss.cpu().data.numpy())
+			# forward + backward + optimize
+			outputs = net(x)
+			loss = criterion(outputs, y)
+			epoch_loss += np.asscalar(loss.cpu().data.numpy())
 
-loss.backward()
-optimizer.step()
+			loss.backward()
+			optimizer.step()
 
-# Print accuracy after every epoch
-train_losses.append(epoch_loss)
-validation_accuracy = compute_accuracy(net, x_valid, y_valid)
-val_errors.append(validation_accuracy)
-validation_loss = compute_loss(net, x_valid, y_valid)
-val_losses.append(validation_loss)
-time_taken = (time.time() - start_time)
-print('Accuracy of the network on epoch %d %%' % epoch + ': %f %%' % (100 * validation_accuracy) +
-'validation loss: %f ' % validation_loss + 'train loss: %f ' % epoch_loss + ' took %f' %time_taken + 'seconds')
-if early_stop.stop_criterion(val_losses):
-print('Stop after %d epochs' % epoch)
-break
+		# Print accuracy after every epoch
+		train_losses.append(epoch_loss)
+		validation_accuracy = compute_accuracy(net, x_valid, y_valid)
+		val_errors.append(validation_accuracy)
+		validation_loss = compute_loss(net, x_valid, y_valid)
+		val_losses.append(validation_loss)
+		time_taken = (time.time() - start_time)
+		print('Accuracy of the network on epoch %d %%' % epoch + ': %f %%' %
+		      (100 * validation_accuracy) +
+		'validation loss: %f ' % validation_loss + 'train loss: %f ' %
+		 epoch_loss + ' took %f' %time_taken + 'seconds')
+	
+		if early_stop.stop_criterion(val_losses):
+			print('Stop after %d epochs' % epoch)
+			break
 
-test_accuracy = compute_accuracy(net, x_test, y_test)
-if save_model:
-save_filename = join('saved_models',
-'convnet_' + str(model_params[0]) + 'x' + str(model_params[1]) + 'x' + str(model_params[2]) + '.pth')
-torch.save(net.state_dict(), save_filename)
-np.savez(join('saved_models', 'training_losses.npz'),
-train_losses=train_losses,
-val_losses=val_losses,
-final_accuracy=test_accuracy)
+	test_accuracy = compute_accuracy(net, x_test, y_test)
+	if save_model:
+	save_filename = join('saved_models',
+	'convnet_' + str(model_params[0]) + 'x' + str(model_params[1]) + 'x' +
+	str(model_params[2]) + '.pth')
+	torch.save(net.state_dict(), save_filename)
+	np.savez(join('saved_models', 'training_losses.npz'),
+	train_losses=train_losses,
+	val_losses=val_losses,
+	final_accuracy=test_accuracy)
 
-print('Final test accuracy: %f %%' % (100 * test_accuracy))
-return test_accuracy
+	print('Final test accuracy: %f %%' % (100 * test_accuracy))
+	return test_accuracy
 
 
-def optimize_hyper_parameters(num_epochs, learning_rate, num_combinations, batch_size, x_train, y_train, x_valid, y_valid, x_test, y_test):
+def optimize_hyper_parameters(num_epochs, learning_rate,
+                              num_combinations, batch_size,
+                              x_train, y_train, x_valid,
+                              y_valid, x_test, y_test):
 
 range1 = [10, 35]
 range2 = [35, 70]
@@ -323,10 +324,13 @@ hyper_parameters = []
 accuracies = []
 
 for n1, n2, n3 in parameter_combinations:
-accuracy = train(num_epochs, learning_rate, [n1, n2, n3], batch_size, x_train, y_train, x_valid, y_valid, x_test, y_test)
+accuracy = train(num_epochs, learning_rate, [n1, n2, n3], batch_size, x_train,
+			     y_train, x_valid, y_valid,
+			     x_test, y_test)
 hyper_parameters.append([n1, n2, n3])
 accuracies.append(accuracy)
-print('accuracy with parameters [' + str(n1) + ', ' + str(n2) + ', ' + str(n3) + '] ' + str(accuracy))
+print('accuracy with parameters [' + str(n1) + ', ' + str(n2) + ', ' + str(n3) + ']
+	 ' + str(accuracy))
 
 hyper_parameters = np.array(hyper_parameters)
 accuracies = np.array(accuracies)
@@ -352,7 +356,7 @@ y_train = np.reshape(y_train, (y_train.size, ))
 y_test = np.reshape(y_test, (y_test.size, ))
 classifier = RandomForestClassifier(n_estimators=200, verbose=1, n_jobs=-1)
 classifier.fit(x_train, y_train)
-pred_test = classifier.predict(x_test)  # Predict labels of test data using the trained classifier
+pred_test = classifier.predict(x_test)
 rf_accuracy = accuracy_score(y_test, pred_test)
 print("Accuracy of random forest: {:.2f}".format(rf_accuracy))
 
@@ -360,7 +364,7 @@ if save_model:
 pickle.dump(classifier, open('saved_models/random_forest.p', 'wb'))
 
 classifier = pickle.load(open('saved_models/random_forest.p', 'rb'))
-pred_test = classifier.predict(x_test)  # Predict labels of test data using the trained classifier
+pred_test = classifier.predict(x_test)
 rf_accuracy = accuracy_score(y_test, pred_test)
 print("Accuracy of random forest: {:.2f}".format(rf_accuracy))
 
