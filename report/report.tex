@@ -147,6 +147,21 @@ The random forest classifier, that was used as a reference method, was implement
 
 \subsection{Inference}
 \label{sec:computational_methods_inference}
+\begin{equation}
+	SENSITIVITY = \frac{TP}{TP + FN}
+	\label{eq:sensitivity}
+\end{equation}
+
+\begin{equation}
+	SPECIFITY = \frac{TN}{FP + TN}
+	\label{eq:specifity}
+\end{equation}
+
+\begin{equation}
+	ACCURACY = \frac{TP + TN}{TP + FP + TN + FN}
+\end{equation}
+
+
 
 \section{Results}
 \label{sec:results}
@@ -175,6 +190,65 @@ The obtained accuracy for the test data set using the trained random-forest clas
 
 \subsection{Inference}
 \label{sec:results_inference}
+\begin{figure*}[!t]
+	\centering
+	\begin{subfigure}[]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/14_test.eps}
+		\caption{}
+	\end{subfigure}
+	\hspace{0.25cm}
+	\centering
+	\begin{subfigure}[]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/14_manual1.eps}
+		\caption{}
+	\end{subfigure}
+	\hspace{0.25cm}
+	\centering
+	\begin{subfigure}[]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/14_test_nn_lowest_accuracy_89.eps}
+		\caption{}
+	\end{subfigure}
+	\hspace{0.25cm}
+	\centering
+	\begin{subfigure}[]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/14_test_rf_lowest_accuracy_89.eps}
+		\caption{}
+	\end{subfigure}\\
+	\vspace{0.25cm}
+	\centering
+	\begin{subfigure}[]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/09_test.eps}
+		\caption{}
+	\end{subfigure}
+	\hspace{0.25cm}
+	\centering
+	\begin{subfigure}[]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/09_manual1.eps}
+		\caption{}
+	\end{subfigure}
+	\hspace{0.25cm}
+	\centering
+	\begin{subfigure}[]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/09_test_nn_best_accuracy_93.eps}
+		\caption{}
+	\end{subfigure}
+	\hspace{0.25cm}
+	\centering
+	\begin{subfigure}[]{0.22\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{images/09_test_rf_best_accuracy_94}
+		\caption{}
+	\end{subfigure}\\
+	\caption{Results of inference in the case of worst accuracy (a)-(d), (a) the retinal image, (b) the manual annotation, (c) result of inference using the develop neural network and (d) the result of inference when the random forest classifier is used. (e)-(h) results of inference in the case of best accuracy.}
+	\label{fig:result_images}
+\end{figure*}
 
 \section{Conclusions}
 \label{sec:conclusions}
