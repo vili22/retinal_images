@@ -12,7 +12,7 @@ def evaluate_statistics():
     image_path = join('..', 'data', 'DRIVE', 'test', 'images')
     gt_path = join('..', 'data', 'DRIVE', 'test', '1st_manual')
     mask_path = join('..', 'data', 'DRIVE', 'test', 'mask')
-    result_path = join('..', 'data', 'results', 'nn')
+    result_path = join('..', 'data', 'results', 'rf')
 
     images = [f for f in listdir(image_path) if isfile(join(image_path, f))]
     patch_size = 2000

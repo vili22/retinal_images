@@ -147,20 +147,21 @@ The random forest classifier, that was used as a reference method, was implement
 
 \subsection{Inference}
 \label{sec:computational_methods_inference}
+When evaluating the performance of the developed neural network, inference is performed on each image in test data set. After inference accuracy, sensitivity and specificity metrics are evaluated. The metrics are evaluated by comparing the combined predicted labels, including all six images in test data set, to the true labels indicated by the ground truth annotations. The accuracy, sensitivity and specificity are calculated as below  
 \begin{equation}
-	SENSITIVITY = \frac{TP}{TP + FN}
+	SENSITIVITY = \frac{TP}{TP + FN},
 	\label{eq:sensitivity}
 \end{equation}
-
 \begin{equation}
-	SPECIFITY = \frac{TN}{FP + TN}
+	SPECIFICITY = \frac{TN}{FP + TN},
 	\label{eq:specifity}
 \end{equation}
-
 \begin{equation}
-	ACCURACY = \frac{TP + TN}{TP + FP + TN + FN}
+	ACCURACY = \frac{TP + TN}{TP + FP + TN + FN},
+	\label{eq:accuracy}
 \end{equation}
-
+where $TP$ is the number of true positives, $FN$ is the number of false negatives, $TN$ is the number of true negatives and $FP$ is the number of false positives.
+The performance metrics are evaluated for both developed neural network and for the trained random forest classifier that is used as a reference method.
 
 
 \section{Results}
@@ -190,12 +191,15 @@ The obtained accuracy for the test data set using the trained random-forest clas
 
 \subsection{Inference}
 \label{sec:results_inference}
+The inference was performed on each image in test data set and combined performance metrics were evaluated as described in \ref{sec:computational_methods_inference}. For developed neural network the accuracy for test images ranged from 89\% to 93\% the combined accuracy being 91\%. The confusion matrix corresponding to combined results for neural network classifier is shown in figure \ref{fig:confusion_matrix_nn}. Based on the confusion matrix the calculated sensitivity and specificity, equations \ref{eq:sensitivity} and \ref{eq:specifity}, for the developed neural network classifier are 85.3\% and 91.4\% respectively. 
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.3\textwidth]{images/confusion_matrix_nn_total_accuracy_91.eps}
 	\caption{Confusion matrix corresponding to inference results for developed neural network.}
 	\label{fig:confusion_matrix_nn}
 \end{figure}
+
+For reference random forest classifier the accuracy for test images ranged from 89\% to 94\% the combined accuracy being 92\%,  which is slightly better than for developed method. The confusion matrix corresponding to combined results for reference random forest classifier is shown in figure \ref{fig:confusion_matrix_rf}. Based on the confusion matrix the sensitivity and specificity for the reference method are 82.9\% and 92.5\% respectively.
 \begin{figure}[!h]
 	\centering
 	\includegraphics[width=0.3\textwidth]{images/confusion_matrix_rf_total_accuracy_92.eps}
@@ -203,6 +207,9 @@ The obtained accuracy for the test data set using the trained random-forest clas
 	\label{fig:confusion_matrix_rf}
 \end{figure}
 
+In figures \ref{fig:result_images}(a)-\ref{fig:result_images}(d) and \ref{fig:result_images}(e)-\ref{fig:result_images}(h) results of inference in the case of worst and best accuracy are shown respectively for both developed neural network and for reference random forest classifier. The first image in the row is the retinal image belonging to test set, second image is the manual ground truth of blood vessels, third image contains the predicted blood vessels using the developed neural network and the last image contains the predicted blood vessels using the reference random forest classifier. According to figure \ref{fig:result_images} both methods works relatively well capturing the essential characteristics of blood vessels. However for developed neural network somewhat more noise is visible in predicted blood vessels compared to reference method which is also evident from the evaluated specificities. In addition the developed method has some problems in the boundary region separating the actual image from the background where multiple false positives are visible.
+
+At first glance it is surprising that the evaluated accuracy is clearly better for inference compared to training. However this can be explained by the fact that in training the positive and negative samples were perfectly balanced. However in inference the whole image, containing significantly more negatives samples, was classified. Both method can classify more accurately negative samples, which is evident from the evaluated sensitivities and specificities, and thus the metrics show better performance in inference compared to training. 
 \begin{figure*}[!t]
 	\centering
 	\begin{subfigure}[]{0.22\textwidth}
@@ -281,33 +288,35 @@ import torch.nn.functional as F
 
 
 class ConvNet(nn.Module):
-def __init__(self, in_channels, out_channels1, out_channels2, out_dens):
-super(ConvNet, self).__init__()
-self.out_channels2 = out_channels2
-self.conv1 = nn.Conv2d(in_channels, out_channels1, kernel_size=5, stride=1, padding=0)
-self.batchn1 = nn.BatchNorm2d(out_channels1)
-self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-self.conv2 = nn.Conv2d(out_channels1, out_channels2, kernel_size=5, stride=1, padding=0)
-self.batchn2 = nn.BatchNorm2d(out_channels2)
-self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+	def __init__(self, in_channels, out_channels1, out_channels2, out_dens):
+		super(ConvNet, self).__init__()
+		self.out_channels2 = out_channels2
+		self.conv1 = nn.Conv2d(in_channels, out_channels1, kernel_size=5,
+		                       stride=1, padding=0)
+		self.batchn1 = nn.BatchNorm2d(out_channels1)
+		self.pool1 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
+		self.conv2 = nn.Conv2d(out_channels1, out_channels2, kernel_size=5,
+		                       stride=1, padding=0)
+		self.batchn2 = nn.BatchNorm2d(out_channels2)
+		self.pool2 = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
 
-self.fc1 = nn.Linear(out_channels2 * 5 * 5, out_dens)
-self.drop1 = nn.Dropout()
-self.fc2 = nn.Linear(out_dens, 1)
-self.sigmoid = nn.Sigmoid()
+		self.fc1 = nn.Linear(out_channels2 * 5 * 5, out_dens)
+		self.drop1 = nn.Dropout()
+		self.fc2 = nn.Linear(out_dens, 1)
+		self.sigmoid = nn.Sigmoid()
 
-def forward(self, x):
-x = F.relu(self.conv1(x))
-x = self.batchn1(x)
-x = self.pool1(x)
-x = F.relu(self.conv2(x))
-x = self.batchn2(x)
-x = self.pool2(x)
-x = x.view(-1, self.out_channels2 * 5 * 5)
-x = F.relu(self.fc1(x))
-x = self.drop1(x)
-x = self.fc2(x)
-return self.sigmoid(x)
+	def forward(self, x):
+		x = F.relu(self.conv1(x))
+		x = self.batchn1(x)
+		x = self.pool1(x)
+		x = F.relu(self.conv2(x))
+		x = self.batchn2(x)
+		x = self.pool2(x)
+		x = x.view(-1, self.out_channels2 * 5 * 5)
+		x = F.relu(self.fc1(x))
+		x = self.drop1(x)
+		x = self.fc2(x)
+		return self.sigmoid(x)
 \end{lstlisting}
 \subsection{Training}
 \begin{lstlisting}
@@ -402,94 +411,98 @@ def optimize_hyper_parameters(num_epochs, learning_rate,
                               x_train, y_train, x_valid,
                               y_valid, x_test, y_test):
 
-range1 = [10, 35]
-range2 = [35, 70]
-range3 = [200, 1200]
+	range1 = [10, 35]
+	range2 = [35, 70]
+	range3 = [200, 1200]
 
-parameter_combinations = random_search(num_combinations, range1, range2, range3)
-hyper_parameters = []
-accuracies = []
+	parameter_combinations = random_search(num_combinations, range1, range2, range3)
+	hyper_parameters = []
+	accuracies = []
 
-for n1, n2, n3 in parameter_combinations:
-accuracy = train(num_epochs, learning_rate, [n1, n2, n3], batch_size, x_train,
-			     y_train, x_valid, y_valid,
-			     x_test, y_test)
-hyper_parameters.append([n1, n2, n3])
-accuracies.append(accuracy)
-print('accuracy with parameters [' + str(n1) + ', ' + str(n2) + ', ' + str(n3) + ']
-	 ' + str(accuracy))
+	for n1, n2, n3 in parameter_combinations:
+		accuracy = train(num_epochs, learning_rate, [n1, n2, n3], batch_size,
+			             x_train, y_train, x_valid, y_valid, x_test, y_test)
+		hyper_parameters.append([n1, n2, n3])
+		accuracies.append(accuracy)
+		print('accuracy with parameters [' + str(n1) + ', ' + str(n2) +
+		      ', ' + str(n3) + ']' + str(accuracy))
 
-hyper_parameters = np.array(hyper_parameters)
-accuracies = np.array(accuracies)
-np.savez(join('saved_models', 'hyperparameters4.npz'),
-hyperparameters=hyper_parameters,
-accuracies=accuracies)
+	hyper_parameters = np.array(hyper_parameters)
+	accuracies = np.array(accuracies)
+	np.savez(join('saved_models', 'hyperparameters4.npz'),
+	hyperparameters=hyper_parameters,
+	accuracies=accuracies)
 
-ix = accuracies.argsort()[-1::-1]
+	ix = accuracies.argsort()[-1::-1]
 
-print(accuracies[ix])
-print(hyper_parameters[ix, :])
+	print(accuracies[ix])
+	print(hyper_parameters[ix, :])
 
 
 def train_random_forets_classifier(x_train, y_train, x_test, y_test, save_model=False):
 
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-import pickle
+	from sklearn.ensemble import RandomForestClassifier
+	from sklearn.metrics import accuracy_score
+	import pickle
 
-x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[2] * x_train.shape[3]))
-x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[2] * x_test.shape[3]))
-y_train = np.reshape(y_train, (y_train.size, ))
-y_test = np.reshape(y_test, (y_test.size, ))
-classifier = RandomForestClassifier(n_estimators=200, verbose=1, n_jobs=-1)
-classifier.fit(x_train, y_train)
-pred_test = classifier.predict(x_test)
-rf_accuracy = accuracy_score(y_test, pred_test)
-print("Accuracy of random forest: {:.2f}".format(rf_accuracy))
+	x_train = np.reshape(x_train, (x_train.shape[0], x_train.shape[2] *
+	 		             x_train.shape[3]))
+	x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[2] *
+	                    x_test.shape[3]))
+	y_train = np.reshape(y_train, (y_train.size, ))
+	y_test = np.reshape(y_test, (y_test.size, ))
+	classifier = RandomForestClassifier(n_estimators=200, verbose=1, n_jobs=-1)
+	classifier.fit(x_train, y_train)
+	pred_test = classifier.predict(x_test)
+	rf_accuracy = accuracy_score(y_test, pred_test)
+	print("Accuracy of random forest: {:.2f}".format(rf_accuracy))
 
-if save_model:
-pickle.dump(classifier, open('saved_models/random_forest.p', 'wb'))
+	if save_model:
+		pickle.dump(classifier, open('saved_models/random_forest.p', 'wb'))
 
-classifier = pickle.load(open('saved_models/random_forest.p', 'rb'))
-pred_test = classifier.predict(x_test)
-rf_accuracy = accuracy_score(y_test, pred_test)
-print("Accuracy of random forest: {:.2f}".format(rf_accuracy))
+	classifier = pickle.load(open('saved_models/random_forest.p', 'rb'))
+	pred_test = classifier.predict(x_test)
+	rf_accuracy = accuracy_score(y_test, pred_test)
+	print("Accuracy of random forest: {:.2f}".format(rf_accuracy))
 
 
 def main(args):
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--num_epochs', default=1, type=int)
-parser.add_argument('--batch_size', default=1000, type=int)
-parser.add_argument('--learning_rate', default=1e-6, type=float)
-parser.add_argument('--optimize_hyperparameters', default=False, type=bool)
-parser.add_argument('--save_model', default=False, type=bool)
-parser.add_argument('--num_combinations', default=10, type=int)
-parser.add_argument('--use_random_forest', default=False, type=bool)
-args = parser.parse_args(args)
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--num_epochs', default=1, type=int)
+	parser.add_argument('--batch_size', default=1000, type=int)
+	parser.add_argument('--learning_rate', default=1e-6, type=float)
+	parser.add_argument('--optimize_hyperparameters', default=False, type=bool)
+	parser.add_argument('--save_model', default=False, type=bool)
+	parser.add_argument('--num_combinations', default=10, type=int)
+	parser.add_argument('--use_random_forest', default=False, type=bool)
+	args = parser.parse_args(args)
 
-use_random_forest = args.use_random_forest
-num_epochs = args.num_epochs
-batch_size = args.batch_size
-learning_rate = args.learning_rate
-hyper_parameter_optimization = False#args.optimize_hyperparameters
-num_combinations = args.num_combinations
-save_model = args.save_model
+	use_random_forest = args.use_random_forest
+	num_epochs = args.num_epochs
+	batch_size = args.batch_size
+	learning_rate = args.learning_rate
+	hyper_parameter_optimization = False#args.optimize_hyperparameters
+	num_combinations = args.num_combinations
+	save_model = args.save_model
 
-(x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_samples(2000)
+	(x_train, y_train), (x_valid, y_valid), (x_test, y_test) = load_samples(2000)
 
-if use_random_forest:
-train_random_forets_classifier(x_train, y_train, x_test, y_test, save_model)
-elif hyper_parameter_optimization:
-optimize_hyper_parameters(num_epochs, learning_rate, num_combinations, batch_size,
-x_train, y_train, x_valid, y_valid, x_test, y_test)
-else:
-train(num_epochs, learning_rate, [33, 67, 355], batch_size, x_train, y_train, x_valid,
-y_valid, x_test, y_test, device='cpu', save_model=save_model)
+	if use_random_forest:
+		train_random_forets_classifier(x_train, y_train, x_test, y_test,
+		                               save_model)
+	elif hyper_parameter_optimization:
+		optimize_hyper_parameters(num_epochs, learning_rate, num_combinations,
+		                          batch_size, x_train, y_train, x_valid, y_valid,
+		                          x_test, y_test)
+	else:
+		train(num_epochs, learning_rate, [33, 67, 355], batch_size, x_train,
+		      y_train, x_valid, y_valid, x_test, y_test, device='cpu',
+		      save_model=save_model)
 
 
 if __name__ == '__main__':
-main(sys.argv[1:])
+	main(sys.argv[1:])
 \end{lstlisting}
 
 \end{document} 
