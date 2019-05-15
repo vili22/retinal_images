@@ -128,7 +128,7 @@ The developed neural network in this work is implemented using the Python progra
 The image is processed pixel by by and for each pixel a patch of size 33x33, cenetered at the pixel, is taken from the image and used in classification.
 The developed convolutional neural network resembles that of Ref. \cite{tan}. However, instead of using three different patch resolutions in classification for a given pixel, only one resolution corresponding to 33x33 pixels from green channel is used in this work. The architecture of the developed neural network is shown in figure \ref{fig:net}. 
 The input of size 33x33 pixels is fed to two convolutional layers with kernels of sizes 5x5. Each convolutional layer is followed by linear rectifying unit (RELU), a patch normalization layer and a max-pool layer with stride 2. The output of second max-pool layer is flattened and fed to fully connected layer followed by RELU. The RELU is followed by dropout layer with dropout probability of 0.5. Finally the output of the dropout layer is forwarded to last fully connected layer with single output. The output of the network is converted to probability using sigmoid function and the final class label is obtained using round operator.
-\begin{figure*}[]
+\begin{figure*}[!t]
 	\centering
 	\includegraphics[width=0.7\textwidth]{images/net_cropped.eps}
 	\caption{Architecture of the developed convolutional neural network.}
@@ -191,25 +191,19 @@ The obtained accuracy for the test data set using the trained random-forest clas
 
 \subsection{Inference}
 \label{sec:results_inference}
-The inference was performed on each image in test data set and combined performance metrics were evaluated as described in \ref{sec:computational_methods_inference}. For developed neural network the accuracy for test images ranged from 89\% to 93\% the combined accuracy being 91\%. The confusion matrix corresponding to combined results for neural network classifier is shown in figure \ref{fig:confusion_matrix_nn}. Based on the confusion matrix the calculated sensitivity and specificity, equations \ref{eq:sensitivity} and \ref{eq:specifity}, for the developed neural network classifier are 85.3\% and 91.4\% respectively. 
-\begin{figure}[!h]
-	\centering
-	\includegraphics[width=0.3\textwidth]{images/confusion_matrix_nn_total_accuracy_91.eps}
-	\caption{Confusion matrix corresponding to inference results for developed neural network.}
-	\label{fig:confusion_matrix_nn}
-\end{figure}
-
-For reference random forest classifier the accuracy for test images ranged from 89\% to 94\% the combined accuracy being 92\%,  which is slightly better than for developed method. The confusion matrix corresponding to combined results for reference random forest classifier is shown in figure \ref{fig:confusion_matrix_rf}. Based on the confusion matrix the sensitivity and specificity for the reference method are 82.9\% and 92.5\% respectively.
-\begin{figure}[!h]
-	\centering
-	\includegraphics[width=0.3\textwidth]{images/confusion_matrix_rf_total_accuracy_92.eps}
-	\caption{Confusion matrix corresponding to inference results for trained random forest classifier.}
-	\label{fig:confusion_matrix_rf}
-\end{figure}
-
-In figures \ref{fig:result_images}(a)-\ref{fig:result_images}(d) and \ref{fig:result_images}(e)-\ref{fig:result_images}(h) results of inference in the case of worst and best accuracy are shown respectively for both developed neural network and for reference random forest classifier. The first image in the row is the retinal image belonging to test set, second image is the manual ground truth of blood vessels, third image contains the predicted blood vessels using the developed neural network and the last image contains the predicted blood vessels using the reference random forest classifier. According to figure \ref{fig:result_images} both methods works relatively well capturing the essential characteristics of blood vessels. However for developed neural network somewhat more noise is visible in predicted blood vessels compared to reference method which is also evident from the evaluated specificities. In addition the developed method has some problems in the boundary region separating the actual image from the background where multiple false positives are visible.
-
-At first glance it is surprising that the evaluated accuracy is clearly better for inference compared to training. However this can be explained by the fact that in training the positive and negative samples were perfectly balanced. However in inference the whole image, containing significantly more negatives samples, was classified. Both method can classify more accurately negative samples, which is evident from the evaluated sensitivities and specificities, and thus the metrics show better performance in inference compared to training. 
+The inference was performed on each image in test data set and combined performance metrics were evaluated as described in \ref{sec:computational_methods_inference}. The summary of the results for both developed method and the reference method are shown in table. For developed method it took around 1 minute to perform inference for a single image while for the reference method the corresponding time was around 30s being half of the computational time of the developed method. In figures \ref{fig:result_images}(a)-\ref{fig:result_images}(d) and \ref{fig:result_images}(e)-\ref{fig:result_images}(h) results of inference in the case of worst and best accuracy are shown respectively for both developed neural network and for reference random forest classifier. The first image in the row is the retinal image belonging to test set, second image is the manual ground truth of blood vessels, third image contains the predicted blood vessels using the developed neural network and the last image contains the predicted blood vessels using the reference random forest classifier.
+\begin{center}
+	\begin{table}[h]
+		\begin{tabular*}{0.45\textwidth}{lclc}
+			Method & Acc. (\%) & Sens. (\%) & Spec. (\%)\\
+			\hline
+			Neural Network & 91 & 85 & 91\\
+			Random Forest & 92 & 83 & 93\\
+			\end{tabular*}
+		\caption{Performance metrics, accuracy, sensitivity and specificity, for developed neural network and reference random forest classifier.}
+		\label{tab:performance_metrics}
+	\end{table}
+\end{center}
 \begin{figure*}[!t]
 	\centering
 	\begin{subfigure}[]{0.22\textwidth}
@@ -270,12 +264,34 @@ At first glance it is surprising that the evaluated accuracy is clearly better f
 	\label{fig:result_images}
 \end{figure*}
 
+For developed neural network the accuracy for test images ranged from 89\% to 93\% the combined accuracy being 91\%. The confusion matrix corresponding to combined results for neural network classifier is shown in figure \ref{fig:confusion_matrix_nn}. Based on the confusion matrix the calculated sensitivity and specificity, equations \ref{eq:sensitivity} and \ref{eq:specifity}, for the developed neural network classifier are 85.3\% and 91.4\% respectively. 
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.3\textwidth]{images/confusion_matrix_nn_total_accuracy_91.eps}
+	\caption{Confusion matrix corresponding to inference results for developed neural network.}
+	\label{fig:confusion_matrix_nn}
+\end{figure}
+
+For reference random forest classifier the accuracy for test images ranged from 89\% to 94\% the combined accuracy being 92\%,  which is slightly better than for developed method. The confusion matrix corresponding to combined results for reference random forest classifier is shown in figure \ref{fig:confusion_matrix_rf}. Based on the confusion matrix the sensitivity and specificity for the reference method are 82.9\% and 92.5\% respectively.
+\begin{figure}[!h]
+	\centering
+	\includegraphics[width=0.3\textwidth]{images/confusion_matrix_rf_total_accuracy_92.eps}
+	\caption{Confusion matrix corresponding to inference results for trained random forest classifier.}
+	\label{fig:confusion_matrix_rf}
+\end{figure}
+
+
+According to figure \ref{fig:result_images} both methods works relatively well capturing the essential characteristics of blood vessels. However for developed neural network somewhat more noise is visible in predicted blood vessels compared to reference method which is also evident from the evaluated specificities. In addition the developed method has some problems in the boundary region separating the actual image from the background where multiple false positives are visible. At first glance it is surprising that the evaluated accuracy is clearly better for inference compared to training. However this can be explained by the fact that in training the positive and negative samples were perfectly balanced. However in inference the whole image, containing significantly more negatives samples, was classified. Both method can classify more accurately negative samples, which is evident from the evaluated sensitivities and specificities, and thus the metrics show better performance in inference compared to training. 
+
 \section{Conclusions}
 \label{sec:conclusions}
+In this work a convolutional neural network was developed to automatically detect blood vessels from retinal images. The obtained accuracy, sensitivity and specificity for the developed method were 91\%, 85\% and 91\% respectively. In addition the a reference performance metrics were evaluated using a random forest classifier for which the corresponding metrics were 92\%, 83\% and 93\%. It is good to notice that the performance metrics are somewhat affected by the class imbalance, favoring negative samples, in inference leading to overestimated performance. The performance of the developed method is somewhat worse compared to reference method even the computational speed of the reference method is about the double of the developed method. However the sensitivity of the developed method is still better than for the reference method.
 
+In Ref. \cite{tan} a rather similar neural network was developed, the main difference being that three different patch sized were used in classification instead of just one. In Ref. \cite{tan} they reported somewhat better performance compared to developed method however the reported computational time in Ref. \cite{tan} was nearly 60 minutes for single image, whereas for developed method the computational time was only 1 minute per image. It is not clear what explains the huge difference in computational time between the two method because in both methods the performance was evaluated using cpu.
+
+Even the evaluated performance for the developed method is slightly worse compared to reference method the neural networks can still be considered as the better approach in a long run. The neural networks can be easily extended and for deep networks, like fully convolutional networks used in Ref. \cite{hu}, significant improvements in both performance and computational time can be achieved that outperforms other classifiers. 
 
 \bibliography{references}
-
 \appendix
 \onecolumngrid
 \section{Source Code}
@@ -504,7 +520,128 @@ def main(args):
 if __name__ == '__main__':
 	main(sys.argv[1:])
 \end{lstlisting}
+\subsection{Inference}
+\begin{lstlisting}
+from os import listdir, mkdir
+from os.path import isfile, isdir, join
+import matplotlib.pyplot as plt
+import matplotlib.image as mimg
+import numpy as np
+import pickle
 
+import torch
+
+from conv_models.convnet import  ConvNet
+import utils.image_utils as image_utils
+
+
+def evaluate_performance():
+
+	image_path = join('data', 'DRIVE', 'test', 'images')
+	mask_path = join('data', 'DRIVE', 'test', 'mask')
+	result_path = join('data', 'results', 'rf')
+
+	images = [f for f in listdir(image_path) if isfile(join(image_path, f))]
+	patch_size = 2000
+
+	vessel_detector = VesselDetectorRf(patch_size)
+
+	for image in images:
+
+		id = image[0:2]
+		image_file = join(image_path, image)
+		mask_file = join(mask_path, id + '_test_mask.gif')
+		image_data = mimg.imread(image_file)[:, :, 1]
+		mask_data = mimg.imread(mask_file)
+		predicted_data = inference(image_data, mask_data, vessel_detector)
+		plt.imsave(join(result_path, image), predicted_data, cmap='binary')
+		# plt.figure()
+		# plt.imshow(image_data, cmap='gray')
+		# plt.figure()
+		# plt.imshow(predicted_data, cmap='binary', interpolation='nearest')
+		# plt.figure()
+		# plt.imshow(mask_data, cmap='binary', interpolation='nearest')
+		# plt.show()
+
+
+def inference(image_data, mask_data, vessel_detector):
+
+	indices = np.where(mask_data == 255)
+	labels = vessel_detector.detect_vessels(image_data, indices)
+	predicted = np.zeros_like(image_data)
+	predicted[indices] = labels[:, 0]
+	return predicted
+
+
+class VesselDetector:
+
+	def __init__(self, patch_size, convmodel):
+		self.patch_size = patch_size
+		self.net = ConvNet(1, 33, 67, 355)
+		self.net.load_state_dict(torch.load(convmodel, map_location=lambda storage, 
+							     loc: storage))
+
+	def detect_vessels(self, image_data, indices):
+
+		self.net.eval()
+		labels = np.zeros((indices[0].size, 1), dtype=np.int32)
+		for k in range(int(np.ceil(indices[0].size / self.patch_size))):
+			start_ind = k * self.patch_size
+			end_ind = (k + 1) * self.patch_size
+			if end_ind > indices[0].size:
+			end_ind = indices[0].size
+
+			patch_indices = (indices[0][start_ind:end_ind], 
+			                 indices[1][start_ind:end_ind])
+			patch_data = image_utils.get_clipped_area(image_data, 
+			                                          patch_indices)
+			patch_data = np.reshape(patch_data, [patch_data.shape[0],
+			                        1, patch_data.shape[1],
+			                        patch_data.shape[2]])
+			x = torch.tensor(patch_data, device='cpu', dtype=torch.float)
+			probabilities = self.net(x)
+			predicted = torch.round(probabilities.data)
+			labels[start_ind:end_ind] = predicted.data.numpy()
+			print('Processed  %f %%' % (100 * k / int(np.ceil(indices[0].size
+			       / self.patch_size))))
+
+		return labels
+
+
+class VesselDetectorRf:
+
+	def __init__(self, patch_size):
+		self.patch_size = patch_size
+		self.classifier = pickle.load(open('saved_models/random_forest.p', 'rb'))
+
+	def detect_vessels(self, image_data, indices):
+
+		labels = np.zeros((indices[0].size, 1), dtype=np.int32)
+		for k in range(int(np.ceil(indices[0].size / self.patch_size))):
+			start_ind = k * self.patch_size
+			end_ind = (k + 1) * self.patch_size
+			if end_ind > indices[0].size:
+			end_ind = indices[0].size
+
+			patch_indices = (indices[0][start_ind:end_ind], 
+			                 indices[1][start_ind:end_ind])
+			patch_data = image_utils.get_clipped_area(image_data,
+										              patch_indices)
+			patch_data = np.reshape(patch_data, [patch_data.shape[0], 
+			                        patch_data.shape[1] *  
+			                        patch_data.shape[2]])
+			predicted = self.classifier.predict(patch_data)
+			labels[start_ind:end_ind, 0] = predicted
+			print('Processed  %f %%' % (100 * k / int(np.ceil(indices[0].size
+			       / self.patch_size))))
+
+		return labels
+
+
+
+if __name__ == '__main__':
+	evaluate_performance()
+\end{lstlisting}
 \end{document} 
 
 
