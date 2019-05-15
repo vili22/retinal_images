@@ -33,16 +33,16 @@
 
 \title{Automatic Detection of Blood Vessels From Retinal Images Using Convolutional Neural Network }
 \date{\today}
-\author{Ville Virkkala, Jarno Leppänen}
+\author{Ville Virkkala}
 
 \begin{abstract}
-Main causes of blindness, such as diabetes and hypertension, are related	to morphological changes of the blood vessels. Thus automatic segmentation of blood vessels from retinal images could greatly improve to make the correct diagnosis in
-optometric studies. In this work a convolutional neural network is developed to automatically segment blood vessels from retinal images. The developed method produces an accuracy of 85\% for the test set. The performance of developed method is also compared against other similar mehthods and against random forest classifier. 
+Main causes of blindness, such as diabetic retinopathy and hypertension, are related	to morphological changes of the blood vessels. Thus automatic segmentation of blood vessels from retinal images could greatly help to make the correct diagnosis efficiently in optometric studies. In this work a convolutional neural network is developed to automatically segment blood vessels from retinal images. The developed method produces an accuracy of 85\% for the test set. The performance of developed method is also compared against other similar mehthods and against random forest classifier. 
 \end{abstract}
 
 \maketitle
 
 \section{Introduction}
+Diabetic retinopathy is the leading cause of vision loss among working age adults. At the first stage of diabetic retinopathy there is no symptoms and the only way to diagnose the disease is by fundus photography. Diabetic retinopathy affects the structure of retinal vasculature causing identifiable attributes in retinal blood vessels such as width, torture and branching pattern \cite{zhu}. Untreated the diabetic retinopathy can lead to nearly complete blindness were patient can only tell the light from darkness. In addition to diabetic retinopathy other eye diseases, like hypertension caused by the damage to the retina and retinal circulation by high blood pressure, can be diagnosed by examining the retinal blood vessels. One in eleven adults, 435 million, are diagnosed with diabetes \cite{diabetic-federation} and thus there is a huge demand for automatic retinal vessel segmentation to save medical resources. 
 
 Several studies have used neural networks in automatic blood vessel detection from retinal images. These methods can be roughly divided into two groups: patch based segmentation of blood vessels\cite{tan} and methods based on fully convolutional neural networks\cite{long,hu}. In patch based image segmentation the image is traversed through pixel by pixel. For each pixel a patch of fixed size, centered at the pixel, is taken from the image and fed to neural network that classifies the pixel into certain class. In Ref. \cite{tan}, for each pixel three patches of different sizes from the green channel of image were taken and scaled into same size and used as a three channel input to convolutional neural network. In Ref. \cite{tan} the reported accuracy was in most cases clearly better than 90\%. 
 The advantages of patch based method are their simplicity and ease of training. However, their main disadvantage is the high computational load when doing inference, because for each pixel separate patch is taken that is fed to neural network. Fully convolutional neural networks\cite{long} are the current state of the art method in image segmentation. The huge advantage of fully convolutional neural network is the huge speed up compared to patch based methods, because the whole image is fed only once as whole to the neural network. In addition there is more contextual information available in fully convolutional neural networks because the whole image is processed at once instead of using smaller patches. In Ref. \cite{hu} a modified version of the fully convolutional network in Ref. \cite{long} was used. In Ref. \cite{hu} the downsampling of the image was done using the same VGG-16 network as in \cite{long} however the output of each convolution stage was directly upsampled into original size and a binary cross entropy loss was then connected into each upsampled image. The final loss that was optimized is then the sum of the losses connected to each upsampled image. In Ref. \cite{hu} the reported accuracy was in all cases better than 95\% while the method was much faster, single image segmentation time around 11seconds, than the method of Ref. \cite{tan}, single image segmentation time around 2000 seconds.  
@@ -50,13 +50,11 @@ The advantages of patch based method are their simplicity and ease of training. 
 In this work a patch based semantic segmentation method based on convolutional neural networks, resembling that of Ref. \cite{tan},  is developed to detect blood vessels from retinal images. The performance of the developed method is validated against several test images. In addition performance of the developed method is compared to random forest classifier implemented in scikit-learn python library \cite{scikit-learn}.
 The paper is organized as follows. The used data-set and the computational
 methods are described in detail in sections \ref{sec:used_data_set} and \ref{sec:computational_methods}. In Sec. \ref{sec:results} training metrics and performance of the developed method in inference when applied on test images are given.
-Sec. \ref{sec:conclusions} is a summary of the results and the differences between the two classifiers are discussed.
+Sec. \ref{sec:conclusions} is a summary of the results and the differences between the developed method and the reference random forest classifier are discussed.
 
 \section{Used data-set}
 \label{sec:used_data_set}
 The used data set in this work is the publicly available DRIVE data set \cite{staal} available in \cite{driveurl}. The data set consist of 40 images of size 565x584 and the corresponding ground truth annotations of blood vessels. The images were obtained from diabetic subjects as a part of diabetic retinopathy screening program in The Netherlands.
-
-The data set was divided into training, validation and test sets containing 28, 6 and 6 images respectively. The images are three channel RGB images, but only the green channel is used in classification, because of the high contrast between blood vessels and background in green channel\cite{green_contrast}. In classification of pixels patches of size 33x33 centered at the pixel were used. From each image 2000 patches for both pixels corresponding to blood vessels and background pixels were randomly sampled resulting in total of 112000 samples for training set, 24000 samples for validation set and 24000 samples for test set respectively. Examples of retinal image that is classified and the corresponding ground truth image are shown in figures \ref{fig:example_images}a and \ref{fig:example_images}b respectively. Examples of patches that corresponds to pixels that are labeled as blood vessels and background are shown in figures \ref{fig:example_patches}a-\ref{fig:example_patches}c and \ref{fig:example_patches}d-\ref{fig:example_patches}f respectively.
 \begin{figure*}[!t]
 	\centering
 	\begin{subfigure}[]{0.4\textwidth}
@@ -74,6 +72,8 @@ The data set was divided into training, validation and test sets containing 28, 
 	\caption{Example of retinal image used in training (a) and the corresponding ground truth annotation of blood vessels (b).}
 	\label{fig:example_images}
 \end{figure*}
+
+The data set was divided into training, validation and test sets containing 28, 6 and 6 images respectively. The images are three channel RGB images, but only the green channel is used in classification, because of the high contrast between blood vessels and background in green channel\cite{green_contrast}. In classification of pixels patches of size 33x33 centered at the pixel were used. From each image 2000 patches for both pixels corresponding to blood vessels and background pixels were randomly sampled resulting in total of 112000 samples for training set, 24000 samples for validation set and 24000 samples for test set respectively. Examples of retinal image that is classified and the corresponding ground truth image are shown in figures \ref{fig:example_images}a and \ref{fig:example_images}b respectively. Examples of patches that corresponds to pixels that are labeled as blood vessels and background are shown in figures \ref{fig:example_patches}a-\ref{fig:example_patches}c and \ref{fig:example_patches}d-\ref{fig:example_patches}f respectively.
 
 \section{Computational methods}
 \label{sec:computational_methods}
@@ -128,12 +128,6 @@ The developed neural network in this work is implemented using the Python progra
 The image is processed pixel by by and for each pixel a patch of size 33x33, cenetered at the pixel, is taken from the image and used in classification.
 The developed convolutional neural network resembles that of Ref. \cite{tan}. However, instead of using three different patch resolutions in classification for a given pixel, only one resolution corresponding to 33x33 pixels from green channel is used in this work. The architecture of the developed neural network is shown in figure \ref{fig:net}. 
 The input of size 33x33 pixels is fed to two convolutional layers with kernels of sizes 5x5. Each convolutional layer is followed by linear rectifying unit (RELU), a patch normalization layer and a max-pool layer with stride 2. The output of second max-pool layer is flattened and fed to fully connected layer followed by RELU. The RELU is followed by dropout layer with dropout probability of 0.5. Finally the output of the dropout layer is forwarded to last fully connected layer with single output. The output of the network is converted to probability using sigmoid function and the final class label is obtained using round operator.
-\begin{figure*}[!t]
-	\centering
-	\includegraphics[width=0.7\textwidth]{images/net_cropped.eps}
-	\caption{Architecture of the developed convolutional neural network.}
-	\label{fig:net}
-\end{figure*}
 
 \subsection{Neural Network Training}
 \label{sec:computational_methods_training_neural_network}
@@ -147,6 +141,12 @@ The random forest classifier, that was used as a reference method, was implement
 
 \subsection{Inference}
 \label{sec:computational_methods_inference}
+\begin{figure*}[!t]
+	\centering
+	\includegraphics[width=0.7\textwidth]{images/net_cropped.eps}
+	\caption{Architecture of the developed convolutional neural network.}
+	\label{fig:net}
+\end{figure*}
 When evaluating the performance of the developed neural network, inference is performed on each image in test data set. After inference accuracy, sensitivity and specificity metrics are evaluated. The metrics are evaluated by comparing the combined predicted labels, including all six images in test data set, to the true labels indicated by the ground truth annotations. The accuracy, sensitivity and specificity are calculated as below  
 \begin{equation}
 	SENSITIVITY = \frac{TP}{TP + FN},
@@ -170,7 +170,7 @@ The performance metrics are evaluated for both developed neural network and for 
 \label{sec:results_training}
 The results for the hyper parameter search, explained in section \ref{sec:computational_methods_training_neural_network}, are shown in Table \ref{tab:hyperparameter_searach_accuracies}. According to Table \ref{tab:hyperparameter_searach_accuracies} the best accuracy was obtained when the hyper parameters were set to 33x67x355. The final accuracy with these parameters for test set, after training over 250 epochs was 84.8\%.
 \begin{center}
-	\begin{table}[h]
+	\begin{table}[b]
 		\begin{tabular*}{0.45\textwidth}{lclc}
 			Configuration & Accuracy (\%) & Configuration & Accuracy (\%)\\
 			\hline
@@ -265,7 +265,7 @@ The inference was performed on each image in test data set and combined performa
 \end{figure*}
 
 For developed neural network the accuracy for test images ranged from 89\% to 93\% the combined accuracy being 91\%. The confusion matrix corresponding to combined results for neural network classifier is shown in figure \ref{fig:confusion_matrix_nn}. Based on the confusion matrix the calculated sensitivity and specificity, equations \ref{eq:sensitivity} and \ref{eq:specifity}, for the developed neural network classifier are 85.3\% and 91.4\% respectively. 
-\begin{figure}[!h]
+\begin{figure}[!b]
 	\centering
 	\includegraphics[width=0.3\textwidth]{images/confusion_matrix_nn_total_accuracy_91.eps}
 	\caption{Confusion matrix corresponding to inference results for developed neural network.}
@@ -273,7 +273,7 @@ For developed neural network the accuracy for test images ranged from 89\% to 93
 \end{figure}
 
 For reference random forest classifier the accuracy for test images ranged from 89\% to 94\% the combined accuracy being 92\%,  which is slightly better than for developed method. The confusion matrix corresponding to combined results for reference random forest classifier is shown in figure \ref{fig:confusion_matrix_rf}. Based on the confusion matrix the sensitivity and specificity for the reference method are 82.9\% and 92.5\% respectively.
-\begin{figure}[!h]
+\begin{figure}[]
 	\centering
 	\includegraphics[width=0.3\textwidth]{images/confusion_matrix_rf_total_accuracy_92.eps}
 	\caption{Confusion matrix corresponding to inference results for trained random forest classifier.}
